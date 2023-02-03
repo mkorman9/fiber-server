@@ -32,26 +32,22 @@ func main() {
 		}
 	}()
 
-	l := newSignalLock()
-	go func() {
+	runInBackground(func() error {
 		listener, err := createListener()
 		if err != nil {
 			log.Error().Err(err).Msgf("Error while starting network listener")
-			l.Unblock()
-			return
+			return err
 		}
 
 		log.Info().Msgf("HTTP server has started")
 
-		err = app.Listener(listener)
-		if err != nil {
+		if err = app.Listener(listener); err != nil {
 			log.Error().Err(err).Msgf("Error while starting HTTP server")
-			l.Unblock()
-			return
+			return err
 		}
-	}()
 
-	l.Block()
+		return nil
+	})
 }
 
 func createListener() (net.Listener, error) {

@@ -12,7 +12,7 @@ type signalLock struct {
 
 func newSignalLock() *signalLock {
 	return &signalLock{
-		ch: make(chan struct{}),
+		ch: make(chan struct{}, 1),
 	}
 }
 

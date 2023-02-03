@@ -60,7 +60,7 @@ func createListener() (net.Listener, error) {
 		}
 
 		return tls.Listen(
-			config.String("SERVER_NETWORK", "tcp"),
+			config.String("SERVER_NETWORK", "tcp4"),
 			config.String("SERVER_ADDRESS", "0.0.0.0:8080"),
 			&tls.Config{
 				Certificates: []tls.Certificate{cert},
@@ -68,7 +68,7 @@ func createListener() (net.Listener, error) {
 		)
 	default:
 		return net.Listen(
-			config.String("SERVER_NETWORK", "tcp"),
+			config.String("SERVER_NETWORK", "tcp4"),
 			config.String("SERVER_ADDRESS", "0.0.0.0:8080"),
 		)
 	}
@@ -80,6 +80,10 @@ func createFiberApp() *fiber.App {
 		ReadTimeout:             5 * time.Second,
 		WriteTimeout:            10 * time.Second,
 		IdleTimeout:             2 * time.Minute,
+		Concurrency:             256 * 1024,
+		BodyLimit:               4 * 1024 * 1024,
+		ReadBufferSize:          4096,
+		WriteBufferSize:         4096,
 		DisableStartupMessage:   true,
 		EnablePrintRoutes:       false,
 		EnableIPValidation:      false,
@@ -87,6 +91,12 @@ func createFiberApp() *fiber.App {
 		ProxyHeader:             "X-Forwarded-For",
 		JSONEncoder:             json.Marshal,
 		JSONDecoder:             json.Unmarshal,
+		TrustedProxies: []string{
+			"127.0.0.0/8",
+			"10.0.0.0/8",
+			"172.16.0.0/12",
+			"192.168.0.0/16",
+		},
 	})
 
 	app.Use(

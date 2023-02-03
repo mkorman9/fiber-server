@@ -11,7 +11,11 @@ import (
 func runInBackground(fn func()) {
 	doneChannel := make(chan struct{}, 1)
 	signalsChannel := make(chan os.Signal)
+
 	signal.Notify(signalsChannel, syscall.SIGINT, syscall.SIGTERM)
+	defer func() {
+		signal.Stop(signalsChannel)
+	}()
 
 	go func() {
 		defer func() {

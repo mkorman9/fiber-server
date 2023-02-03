@@ -8,8 +8,8 @@ import (
 	"syscall"
 )
 
-func runInBackground(fn func() error) {
-	errorsChannel := make(chan struct{}, 1)
+func runInBackground(fn func()) {
+	doneChannel := make(chan struct{}, 1)
 	signalsChannel := make(chan os.Signal)
 	signal.Notify(signalsChannel, syscall.SIGINT, syscall.SIGTERM)
 
@@ -23,17 +23,13 @@ func runInBackground(fn func() error) {
 			}
 		}()
 
-		if err := fn(); err != nil {
-			select {
-			case errorsChannel <- struct{}{}:
-			default:
-			}
-		}
+		fn()
+		doneChannel <- struct{}{}
 	}()
 
 	for {
 		select {
-		case <-errorsChannel:
+		case <-doneChannel:
 			return
 		case <-signalsChannel:
 			return

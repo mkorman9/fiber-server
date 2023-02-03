@@ -32,21 +32,19 @@ func main() {
 		}
 	}()
 
-	runInBackground(func() error {
+	runInBackground(func() {
 		listener, err := createListener()
 		if err != nil {
 			log.Error().Err(err).Msgf("Error while starting network listener")
-			return err
+			return
 		}
 
 		log.Info().Msgf("HTTP server has started")
 
 		if err = app.Listener(listener); err != nil {
 			log.Error().Err(err).Msgf("Error while starting HTTP server")
-			return err
+			return
 		}
-
-		return nil
 	})
 }
 

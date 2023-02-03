@@ -28,14 +28,16 @@ func main() {
 		if err := app.ShutdownWithTimeout(5 * time.Second); err != nil {
 			log.Error().Err(err).Msgf("Error while shutting down HTTP server")
 		} else {
-			log.Info().Msgf("HTTP server has stopped successfully")
+			log.Info().Msgf("HTTP server has stopped")
 		}
 	}()
 
+	l := newSignalLock()
 	go func() {
 		listener, err := createListener()
 		if err != nil {
 			log.Error().Err(err).Msgf("Error while starting network listener")
+			l.Unblock()
 			return
 		}
 
@@ -44,11 +46,12 @@ func main() {
 		err = app.Listener(listener)
 		if err != nil {
 			log.Error().Err(err).Msgf("Error while starting HTTP server")
+			l.Unblock()
 			return
 		}
 	}()
 
-	blockGoroutine()
+	l.Block()
 }
 
 func createListener() (net.Listener, error) {

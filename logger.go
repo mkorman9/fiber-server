@@ -21,8 +21,9 @@ func setupLogger() {
 	zerolog.ErrorStackMarshaler = stackTraceMarshaller
 
 	log.Logger = log.Output(zerolog.ConsoleWriter{
-		Out:     os.Stderr,
-		NoColor: !isatty.IsTerminal(os.Stdout.Fd()),
+		Out:        os.Stderr,
+		NoColor:    !isatty.IsTerminal(os.Stdout.Fd()),
+		TimeFormat: "2006-01-02 15:04:05",
 	})
 }
 

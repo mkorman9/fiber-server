@@ -12,7 +12,7 @@ func loadConfig() {
 		s := strings.SplitN(env, "=", 2)
 		envName := s[0]
 
-		envs[envName] = envName
+		envs[envName] = strings.ReplaceAll(strings.ToLower(envName), "_", ".")
 	}
 
 	config.LoadOSEnvs(envs)

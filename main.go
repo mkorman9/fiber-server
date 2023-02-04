@@ -49,8 +49,8 @@ func main() {
 }
 
 func createListener() (net.Listener, error) {
-	tlsCert := config.String("SERVER_TLS_CERT")
-	tlsKey := config.String("SERVER_TLS_KEY")
+	tlsCert := config.String("server.tls.cert")
+	tlsKey := config.String("server.tls.key")
 
 	switch {
 	case tlsCert != "" && tlsKey != "":
@@ -60,16 +60,16 @@ func createListener() (net.Listener, error) {
 		}
 
 		return tls.Listen(
-			config.String("SERVER_NETWORK", "tcp4"),
-			config.String("SERVER_ADDRESS", "0.0.0.0:8080"),
+			config.String("server.network", "tcp4"),
+			config.String("server.address", "0.0.0.0:8080"),
 			&tls.Config{
 				Certificates: []tls.Certificate{cert},
 			},
 		)
 	default:
 		return net.Listen(
-			config.String("SERVER_NETWORK", "tcp4"),
-			config.String("SERVER_ADDRESS", "0.0.0.0:8080"),
+			config.String("server.network", "tcp4"),
+			config.String("server.address", "0.0.0.0:8080"),
 		)
 	}
 }

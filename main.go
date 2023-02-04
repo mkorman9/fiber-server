@@ -21,7 +21,9 @@ func main() {
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.
 			Status(fiber.StatusOK).
-			SendString("Hello, world!")
+			JSON(fiber.Map{
+				"message": "Hello, world!",
+			})
 	})
 
 	defer func() {
